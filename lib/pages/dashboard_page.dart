@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:ecommerce_default/controllers/dashboard_controller.dart';
 import 'package:ecommerce_default/repositories/dashboard_repository_imp.dart';
+import 'package:ecommerce_default/services/prefs_service.dart';
 import 'package:flutter/material.dart';
 
 import '../models/product_model.dart';
@@ -34,13 +33,20 @@ class _DashboardPageState extends State<DashboardPage> {
         actions: <Widget>[
           IconButton(
               iconSize: 25,
-              onPressed: () {},
+              onPressed: () {
+                PrefsService.logout().then((_) {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/login', (_) => true);
+                });
+              },
               icon: const Icon(Icons.logout_rounded))
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.shopping_cart_rounded),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed('/cart');
+        },
       ),
       body: ValueListenableBuilder<List<ProductModel>>(
         valueListenable: _dashboardController.products,

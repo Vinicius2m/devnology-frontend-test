@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ecommerce_default/services/prefs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,6 +52,7 @@ class LoginController {
         }
         if (response.statusCode == 200) {
           isLoading.value = false;
+          PrefsService.save(jsonDecode(response.body)['token']!);
           return [true, response.body];
         }
       }

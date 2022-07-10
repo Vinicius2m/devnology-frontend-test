@@ -1,3 +1,4 @@
+import 'package:ecommerce_default/services/prefs_service.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -11,9 +12,11 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacementNamed('/login');
-    });
+    Future.wait(
+            [PrefsService.isAuth(), Future.delayed(const Duration(seconds: 2))])
+        .then((value) => value[0]
+            ? Navigator.pushReplacementNamed(context, '/dashboard')
+            : Navigator.pushReplacementNamed(context, '/login'));
   }
 
   @override
