@@ -24,6 +24,7 @@ class _SplashPageState extends State<SplashPage> {
           Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
         SizedBox(height: 25),
         CircularProgressIndicator(
+          strokeWidth: 2,
           color: Colors.white60,
         )
       ]),

@@ -10,7 +10,7 @@ class LoginBody extends StatefulWidget {
 }
 
 class _LoginBodyState extends State<LoginBody> {
-  LoginController _loginController = LoginController();
+  final LoginController _loginController = LoginController();
 
   @override
   Widget build(BuildContext context) {
