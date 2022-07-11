@@ -36,4 +36,13 @@ class CartController {
       return value;
     });
   }
+
+  checkoutCart() async {
+    var isCheckout = await _cartRepository.checkoutCart();
+    if (isCheckout) {
+      cartProducts.value = await _cartRepository.getCartProducts();
+      return true;
+    }
+    return false;
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:ecommerce_default/controllers/cart_controller.dart';
 import 'package:ecommerce_default/models/product_model.dart';
+import 'package:ecommerce_default/services/prefs_service.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -25,7 +26,12 @@ class _CartPageState extends State<CartPage> {
           actions: <Widget>[
             IconButton(
                 iconSize: 25,
-                onPressed: () {},
+                onPressed: () {
+                  PrefsService.logout().then((_) {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/login', (_) => true);
+                  });
+                },
                 icon: const Icon(Icons.logout_rounded))
           ],
         ),
@@ -39,37 +45,77 @@ class _CartPageState extends State<CartPage> {
                 topRight: Radius.circular(20),
               ),
             ),
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Expanded(
-                  flex: 0,
-                  child: Text(
-                    'Total: R\$ ${cartController.cartProducts.value.fold(0, (num previous, product) => previous + double.parse(product.price))}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+            height: 60,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    flex: 0,
+                    child: Text(
+                      'Total:\nR\$ ${cartController.cartProducts.value.fold(0, (num previous, product) => previous + double.parse(product.price))}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    primary: Colors.white,
-                    backgroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'Finalizar',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 48, 240, 147),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.all(13),
                     ),
-                  ),
-                  onPressed: () {},
-                )
-              ],
+                    child: const Text(
+                      'Finalizar Compra',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 43, 214, 131),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () async {
+                      var isDone = await cartController.checkoutCart();
+                      if (isDone) {
+                        showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                                  title: const Text('Sucesso!'),
+                                  content: const Text(
+                                      'Compra finalizada com sucesso'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  const Color.fromRGBO(
+                                                      38, 147, 96, 1))),
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, '/dashboard');
+                                      },
+                                      child: const Text('Ok'),
+                                    )
+                                  ],
+                                ));
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (_) => const AlertDialog(
+                                  title: Text('Erro!'),
+                                  content: Text(
+                                      'Não foi possível finalizar a compra'),
+                                ));
+                      }
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -101,10 +147,8 @@ class _CartPageState extends State<CartPage> {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
-                            setState(() {
-                              cartController.removeFromCart(
-                                  cartController.cartProducts.value[index]);
-                            });
+                            cartController.removeFromCart(
+                                cartController.cartProducts.value[index]);
                           },
                         ),
                       ),

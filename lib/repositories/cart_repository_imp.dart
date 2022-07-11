@@ -90,4 +90,28 @@ class CartRepositoryImp implements CartRepository {
       client.close();
     }
   }
+
+  @override
+  checkoutCart() async {
+    var client = http.Client();
+
+    try {
+      var token = await PrefsService.getToken();
+      var response = await client.post(
+        Uri.parse('https://api-ecommerce-default.herokuapp.com/cart/checkout'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } finally {
+      client.close();
+    }
+  }
 }

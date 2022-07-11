@@ -20,6 +20,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   final CartController _cartController = CartController(CartRepositoryImp());
 
+  ValueNotifier<bool> _isLoading = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     super.initState();
@@ -49,8 +51,8 @@ class _DashboardPageState extends State<DashboardPage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.shopping_cart_rounded),
         onPressed: () async {
-          await _cartController.getCartProducts();
           Navigator.of(context).pushNamed('/cart', arguments: _cartController);
+          await _cartController.getCartProducts();
         },
       ),
       backgroundColor: const Color.fromARGB(255, 238, 238, 238),
@@ -64,7 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return Container(
                       margin: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 20),
-                      height: 290,
+                      padding: const EdgeInsets.only(bottom: 12),
                       width: 200,
                       decoration: BoxDecoration(
                         boxShadow: const [
@@ -98,54 +100,83 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                             ),
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                margin: const EdgeInsets.only(
-                                    top: 20, left: 13, right: 10),
-                                child: Text(
-                                  overflow: TextOverflow.ellipsis,
-                                  products[index].name,
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500),
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.only(left: 13),
+                                  child: Text(
+                                    overflow: TextOverflow.visible,
+                                    textWidthBasis: TextWidthBasis.parent,
+                                    products[index].name,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5.0),
-                                child: MaterialButton(
-                                  height: 40,
-                                  // clipBehavior: Clip.none,
-                                  onPressed: () async {
-                                    if (await _cartController
-                                        .addToCart(products[index])) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                            'Produto adicionado ao carrinho'),
-                                        duration: Duration(seconds: 1),
-                                      ));
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content:
-                                            Text('Produto já está no carrinho'),
-                                        duration: Duration(seconds: 1),
-                                      ));
-                                    }
-                                  },
-                                  shape: const CircleBorder(),
-                                  color: const Color.fromRGBO(38, 174, 96, 1),
-                                  textColor: Colors.white,
-                                  // padding: const EdgeInsets.all(16),
-                                  child: const Icon(
-                                      Icons.add_shopping_cart_rounded,
-                                      size: 20),
-                                ),
-                              ),
+                              ValueListenableBuilder<bool>(
+                                  valueListenable: _isLoading,
+                                  builder: (context, isLoading, child) {
+                                    return isLoading
+                                        ? MaterialButton(
+                                            onPressed: () {},
+                                            height: 45,
+                                            clipBehavior: Clip.none,
+                                            shape: const CircleBorder(),
+                                            color: const Color.fromRGBO(
+                                                38, 174, 96, 1),
+                                            textColor: Colors.white,
+                                            // padding: const EdgeInsets.all(16),
+                                            child:
+                                                const CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
+                                            ))
+                                        : MaterialButton(
+                                            height: 45,
+                                            clipBehavior: Clip.none,
+                                            shape: const CircleBorder(),
+                                            color: const Color.fromRGBO(
+                                                38, 174, 96, 1),
+                                            textColor: Colors.white,
+                                            // padding: const EdgeInsets.all(16),
+                                            child: const Icon(
+                                                Icons.add_shopping_cart_rounded,
+                                                size: 20),
+                                            onPressed: () async {
+                                              _isLoading.value = true;
+                                              if (await _cartController
+                                                  .addToCart(products[index])) {
+                                                _isLoading.value = false;
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  content: Text(
+                                                      'Produto adicionado ao carrinho'),
+                                                  duration:
+                                                      Duration(seconds: 1),
+                                                ));
+                                              } else {
+                                                _isLoading.value = false;
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  content: Text(
+                                                      'Produto já está no carrinho'),
+                                                  duration:
+                                                      Duration(seconds: 1),
+                                                ));
+                                              }
+                                            },
+                                          );
+                                  }),
                             ],
                           ),
                           Container(
