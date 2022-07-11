@@ -1,4 +1,6 @@
+import 'package:ecommerce_default/controllers/cart_controller.dart';
 import 'package:ecommerce_default/controllers/dashboard_controller.dart';
+import 'package:ecommerce_default/repositories/cart_repository_imp.dart';
 import 'package:ecommerce_default/repositories/dashboard_repository_imp.dart';
 import 'package:ecommerce_default/services/prefs_service.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final DashboardController _dashboardController =
       DashboardController(DashboardRepositoryImp());
+
+  final CartController _cartController = CartController(CartRepositoryImp());
 
   @override
   void initState() {
@@ -44,10 +48,12 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.shopping_cart_rounded),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/cart');
+        onPressed: () async {
+          await _cartController.getCartProducts();
+          Navigator.of(context).pushNamed('/cart', arguments: _cartController);
         },
       ),
+      backgroundColor: const Color.fromARGB(255, 238, 238, 238),
       body: ValueListenableBuilder<List<ProductModel>>(
         valueListenable: _dashboardController.products,
         builder: (context, products, child) {
@@ -58,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return Container(
                       margin: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 20),
-                      height: 280,
+                      height: 290,
                       width: 200,
                       decoration: BoxDecoration(
                         boxShadow: const [
@@ -93,40 +99,53 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
-                                  child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.topLeft,
-                                    margin: const EdgeInsets.only(
-                                        top: 13, left: 13, right: 10),
-                                    child: Text(
-                                      products[index].name,
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    right: 0,
-                                    top: 15,
-                                    child: MaterialButton(
-                                      height: 45,
-                                      onPressed: () {},
-                                      shape: const CircleBorder(),
-                                      color:
-                                          const Color.fromRGBO(38, 174, 96, 1),
-                                      textColor: Colors.white,
-                                      // padding: const EdgeInsets.all(16),
-                                      child: const Icon(
-                                          Icons.add_shopping_cart_rounded,
-                                          size: 20),
-                                    ),
-                                  ),
-                                ],
-                              )),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                margin: const EdgeInsets.only(
+                                    top: 20, left: 13, right: 10),
+                                child: Text(
+                                  overflow: TextOverflow.ellipsis,
+                                  products[index].name,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: MaterialButton(
+                                  height: 40,
+                                  // clipBehavior: Clip.none,
+                                  onPressed: () async {
+                                    if (await _cartController
+                                        .addToCart(products[index])) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'Produto adicionado ao carrinho'),
+                                        duration: Duration(seconds: 1),
+                                      ));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content:
+                                            Text('Produto já está no carrinho'),
+                                        duration: Duration(seconds: 1),
+                                      ));
+                                    }
+                                  },
+                                  shape: const CircleBorder(),
+                                  color: const Color.fromRGBO(38, 174, 96, 1),
+                                  textColor: Colors.white,
+                                  // padding: const EdgeInsets.all(16),
+                                  child: const Icon(
+                                      Icons.add_shopping_cart_rounded,
+                                      size: 20),
+                                ),
+                              ),
                             ],
                           ),
                           Container(

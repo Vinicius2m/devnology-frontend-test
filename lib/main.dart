@@ -1,3 +1,4 @@
+import 'package:ecommerce_default/pages/cart_page.dart';
 import 'package:ecommerce_default/pages/dashboard_page.dart';
 import 'package:ecommerce_default/pages/login_page.dart';
 import 'package:ecommerce_default/pages/register_page.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/register': (_) => const RegisterPage(),
         '/login': (_) => const LoginPage(),
         '/dashboard': (_) => const DashboardPage(),
+        '/cart': (_) => const CartPage(),
       },
       home: const LoginPage(),
     );
