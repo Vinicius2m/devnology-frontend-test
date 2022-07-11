@@ -1,16 +1,26 @@
-# ecommerce_default
+# Teste Devnology
 
-A new Flutter project.
+## Descrição
+E-commerce feito com Flutter consumindo API em Nest.
 
-## Getting Started
+## Processo de desenvolvimento
+Foi a primeira vez que tive contato com Dart e Flutter, achei muito poderoso, porém tive certas dificuldades por ser um framework muito novo, sofri principalmente nas partes de login e registro de usuário e a na estilização dos widgets conforme o design que eu pensei para a aplicação. Implementei um pouco do padrão Repository que foi onde eu deixei toda a parte do consumo das APIs externas.
 
-This project is a starting point for a Flutter application.
+## Instalação
+```bash
+# Prepare seu ambiente Flutter
+# Veja como em https://flutter.dev/docs/get-started/install
+# Depois de tudo configurado
+# Clone o repositório
+$ git clone https://github.com/Vinicius2m/devnology-frontend-test.git devnology
+# Entre no diretório criado
+$ cd devnology
+# Verifique se há algo de errado
+$ flutter doctor
+# Instale as dependências
+$ flutter packages get
+# Rode o APK
+$ flutter build apk --release
 
-A few resources to get you started if this is your first Flutter project:
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
