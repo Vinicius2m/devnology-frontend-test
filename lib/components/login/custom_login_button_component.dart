@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomLoginButtonWidget extends StatelessWidget {
   final LoginController loginController;
+
   const CustomLoginButtonWidget({Key? key, required this.loginController})
       : super(key: key);
 
@@ -29,6 +30,7 @@ class CustomLoginButtonWidget extends StatelessWidget {
                     if (value is List) {
                       Navigator.of(context).pushReplacementNamed('/dashboard');
                     } else {
+                      loginController.isLoading.value = false;
                       showDialog(
                           context: context,
                           builder: (_) => AlertDialog(

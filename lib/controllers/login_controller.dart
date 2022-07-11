@@ -33,6 +33,26 @@ class LoginController {
     return true;
   }
 
+  static verifyToken(String token) async {
+    var client = http.Client();
+
+    try {
+      var response = await client.get(
+          Uri.parse('https://api-ecommerce-default.herokuapp.com/users'),
+          headers: {
+            'Authorization': 'Bearer $token',
+          });
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } finally {
+      client.close();
+    }
+  }
+
   Future login() async {
     var client = http.Client();
     isLoading.value = true;
@@ -46,14 +66,12 @@ class LoginController {
             Uri.parse(
                 'https://api-ecommerce-default.herokuapp.com/users/login'),
             body: toJson());
-        if (response.statusCode == 400) {
-          isLoading.value = false;
-          return 'Erro ao fazer login';
-        }
         if (response.statusCode == 200) {
           isLoading.value = false;
           PrefsService.save(jsonDecode(response.body)['token']!);
           return [true, response.body];
+        } else {
+          return 'Verifique seu email e senha';
         }
       }
     } finally {
